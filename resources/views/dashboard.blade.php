@@ -107,6 +107,56 @@
 
         </div>
 
+        <div class="row mt-4 g-4">
+
+            <div class="col-md-3">
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <i class="fa-solid fa-layer-group text-primary fa-2x"></i>
+                        <h2 class="mt-3">{{ \App\Models\Deployment::count() }}</h2>
+                        <h6>Total Deployments</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <i class="fa-solid fa-circle-check text-success fa-2x"></i>
+                        <h2 class="mt-3">
+                            {{ \App\Models\Deployment::where('status','Success')->count() }}
+                        </h2>
+                        <h6>Successful</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <i class="fa-solid fa-circle-xmark text-danger fa-2x"></i>
+                        <h2 class="mt-3">
+                            {{ \App\Models\Deployment::where('status','Failed')->count() }}
+                        </h2>
+                        <h6>Failed</h6>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow text-center">
+                    <div class="card-body">
+                        <i class="fa-solid fa-calendar-day text-warning fa-2x"></i>
+                        <h2 class="mt-3">
+                            {{ \App\Models\Deployment::whereDate('deployment_date',today())->count() }}
+                        </h2>
+                        <h6>Today's Deployments</h6>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
         <div class="row g-4">
 
             <div class="col-lg-6">
@@ -168,6 +218,45 @@
                             Run Health Check
 
                         </a>
+
+                    </div>
+
+                    <div class="row mt-4">
+
+                        <div class="col-lg-12">
+
+                            <div class="card shadow">
+
+                                <div class="card-body text-center">
+
+                                    <div class="icon blue mb-3">
+
+                                        <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                                    </div>
+
+                                    <h3>Deployment Management</h3>
+
+                                    <p class="text-muted">
+
+                                        Manage deployments, search records, export CSV, update deployment status and delete records.
+
+                                    </p>
+
+                                    <a href="{{ route('deployments.index') }}"
+                                        class="btn btn-dark btn-lg">
+
+                                        <i class="fa-solid fa-list"></i>
+
+                                        Open Deployment Manager
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
 
                     </div>
 
@@ -252,6 +341,102 @@
                             </div>
 
                         </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row mt-5">
+
+            <div class="col-lg-12">
+
+                <div class="card shadow">
+
+                    <div class="card-header bg-dark text-white">
+
+                        <h4>
+
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+
+                            Latest Deployments
+
+                        </h4>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <table class="table table-hover">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>ID</th>
+
+                                    <th>Project</th>
+
+                                    <th>Server</th>
+
+                                    <th>Status</th>
+
+                                    <th>Date</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                @foreach(\App\Models\Deployment::latest()->take(5)->get() as $deployment)
+
+                                <tr>
+
+                                    <td>{{ $deployment->id }}</td>
+
+                                    <td>{{ $deployment->project_name }}</td>
+
+                                    <td>{{ $deployment->server_name }}</td>
+
+                                    <td>
+
+                                        @if($deployment->status=="Success")
+
+                                        <span class="badge bg-success">
+
+                                            Success
+
+                                        </span>
+
+                                        @else
+
+                                        <span class="badge bg-danger">
+
+                                            Failed
+
+                                        </span>
+
+                                        @endif
+
+                                    </td>
+
+                                    <td>
+
+                                        {{ $deployment->deployment_date }}
+
+                                    </td>
+
+                                </tr>
+
+                                @endforeach
+
+                            </tbody>
+
+                        </table>
 
                     </div>
 

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Deployment;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ServerController extends Controller
 {
@@ -75,5 +78,123 @@ class ServerController extends Controller
         $checks['PHP >= 8.2'] = version_compare(PHP_VERSION, '8.2.0', '>=');
 
         return view('health-check', compact('checks'));
+    }
+
+    public function deploymentList(Request $request)
+    {
+        $search = $request->search;
+
+        $deployments = Deployment::query()
+
+            ->when($search, function ($query) use ($search) {
+
+                $query->where('project_name', 'like', "%{$search}%")
+                    ->orWhere('server_name', 'like', "%{$search}%")
+                    ->orWhere('environment', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%")
+                    ->orWhere('deployed_by', 'like', "%{$search}%");
+            })
+
+            ->oldest()
+
+            ->paginate(5)
+
+            ->withQueryString();
+
+        $statistics = [
+
+            'total' => Deployment::count(),
+
+            'success' => Deployment::where('status', 'Success')->count(),
+
+            'failed' => Deployment::where('status', 'Failed')->count(),
+
+            'today' => Deployment::whereDate('deployment_date', today())->count(),
+
+        ];
+
+        return view('deployments.index', compact(
+            'deployments',
+            'statistics',
+            'search'
+        ));
+    }
+
+    public function deleteDeployment(Deployment $deployment)
+    {
+        $deployment->delete();
+
+        return redirect()
+            ->route('deployments.index')
+            ->with('success', 'Deployment deleted successfully.');
+    }
+
+    public function exportCsv()
+    {
+        $fileName = 'deployments.csv';
+
+        $deployments = Deployment::all();
+
+        $headers = [
+
+            "Content-type" => "text/csv",
+
+            "Content-Disposition" => "attachment; filename={$fileName}",
+
+        ];
+
+        $columns = [
+
+            'ID',
+
+            'Project',
+
+            'Server',
+
+            'Environment',
+
+            'Status',
+
+            'Deployed By',
+
+            'Deployment Date',
+
+            'Remarks',
+
+        ];
+
+        $callback = function () use ($deployments, $columns) {
+
+            $file = fopen('php://output', 'w');
+
+            fputcsv($file, $columns);
+
+            foreach ($deployments as $deployment) {
+
+                fputcsv($file, [
+
+                    $deployment->id,
+
+                    $deployment->project_name,
+
+                    $deployment->server_name,
+
+                    $deployment->environment,
+
+                    $deployment->status,
+
+                    $deployment->deployed_by,
+
+                    $deployment->deployment_date,
+
+                    $deployment->remarks,
+
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

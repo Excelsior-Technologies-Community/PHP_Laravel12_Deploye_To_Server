@@ -120,6 +120,57 @@ class ServerController extends Controller
         ));
     }
 
+    public function createDeployment()
+    {
+        return view('deployments.create');
+    }
+
+    public function storeDeployment(Request $request)
+    {
+        $validated = $request->validate([
+            'project_name' => 'required|string|max:255',
+            'server_name' => 'required|string|max:255',
+            'environment' => 'required|string|max:100',
+            'status' => 'required|string|in:Success,Failed',
+            'deployed_by' => 'required|string|max:255',
+            'deployment_date' => 'required|date',
+            'remarks' => 'nullable|string',
+        ]);
+
+        $validated['duration_seconds'] = rand(25, 95);
+        $validated['commit_hash'] = substr(md5(uniqid()), 0, 7);
+
+        Deployment::create($validated);
+
+        return redirect()
+            ->route('deployments.index')
+            ->with('success', 'Deployment logged successfully.');
+    }
+
+    public function editDeployment(Deployment $deployment)
+    {
+        return view('deployments.edit', compact('deployment'));
+    }
+
+    public function updateDeployment(Request $request, Deployment $deployment)
+    {
+        $validated = $request->validate([
+            'project_name' => 'required|string|max:255',
+            'server_name' => 'required|string|max:255',
+            'environment' => 'required|string|max:100',
+            'status' => 'required|string|in:Success,Failed',
+            'deployed_by' => 'required|string|max:255',
+            'deployment_date' => 'required|date',
+            'remarks' => 'nullable|string',
+        ]);
+
+        $deployment->update($validated);
+
+        return redirect()
+            ->route('deployments.index')
+            ->with('success', 'Deployment updated successfully.');
+    }
+
     public function deleteDeployment(Deployment $deployment)
     {
         $deployment->delete();

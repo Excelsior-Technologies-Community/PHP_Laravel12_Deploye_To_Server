@@ -38,6 +38,7 @@
 </head>
 
 <body>
+    @include('layouts.navigation')
 
     <div class="container py-5">
 

@@ -4,34 +4,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laravel Deployment Dashboard</title>
+    <title>Laravel 12 Deployment Hub & DevOps Dashboard</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
 
     <style>
         body {
-            background: #f4f6f9;
+            background: #0f172a;
+            color: #f8fafc;
+            font-family: system-ui, -apple-system, sans-serif;
         }
 
         .hero {
-            background: linear-gradient(135deg, #0d6efd, #6610f2);
+            background: linear-gradient(135deg, #1e3a8a, #4338ca);
             color: white;
             border-radius: 18px;
+            border: 1px solid #3b82f6;
         }
 
         .card {
-            border: none;
+            background: #1e293b;
+            border: 1px solid #334155;
             border-radius: 15px;
+            color: #f8fafc;
             transition: .3s;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, .15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .4);
+            border-color: #38bdf8;
         }
 
-        .icon {
+        .feature-box {
+            padding: 30px;
+            text-align: center;
+            height: 100%;
+        }
+
+        .icon-circle {
             width: 70px;
             height: 70px;
             display: flex;
@@ -40,424 +52,169 @@
             border-radius: 50%;
             font-size: 28px;
             color: white;
-            margin: auto;
+            margin: 0 auto 20px auto;
         }
 
-        .blue {
-            background: #0d6efd;
-        }
-
-        .green {
-            background: #198754;
-        }
-
-        .info-card {
-            border-left: 5px solid #0d6efd;
-        }
-
-        footer {
-            color: #6c757d;
+        .table td, .table th {
+            color: #f8fafc;
+            border-color: #334155;
+            background: transparent;
         }
     </style>
-
 </head>
 
 <body>
+    @include('layouts.navigation')
 
-    <div class="container py-5">
+    <div class="container py-2">
 
+        <!-- Hero Header -->
         <div class="hero p-5 shadow mb-5">
-
-            <h1 class="fw-bold">
-                <i class="fa-solid fa-server"></i>
-                Laravel 12 Deployment Dashboard
-            </h1>
-
-            <p class="lead mt-3">
-                Deployment to Server & Continuous Integration demonstration project.
-            </p>
-
-            <hr>
-
-            <div class="row text-center">
-
-                <div class="col-md-3">
-                    <h4>{{ app()->version() }}</h4>
-                    <small>Laravel Version</small>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="fw-bold mb-2">
+                        <i class="fa-solid fa-server me-2"></i>
+                        Laravel 12 Deployment & DevOps Control Center
+                    </h1>
+                    <p class="lead mb-0 text-light opacity-90">
+                        End-to-end continuous delivery pipeline, interactive simulators, telemetry analytics, and Linux SSH terminal.
+                    </p>
                 </div>
-
-                <div class="col-md-3">
-                    <h4>{{ PHP_VERSION }}</h4>
-                    <small>PHP Version</small>
+                <div>
+                    <span class="badge bg-success px-3 py-2 fs-6"><i class="fa-solid fa-circle-check"></i> System Operational</span>
                 </div>
-
-                <div class="col-md-3">
-                    <h4>{{ config('app.env') }}</h4>
-                    <small>Environment</small>
-                </div>
-
-                <div class="col-md-3">
-                    <h4 class="text-warning">
-                        Ready
-                    </h4>
-                    <small>Deployment Status</small>
-                </div>
-
             </div>
 
+            <hr class="border-secondary opacity-50 my-4">
+
+            <div class="row text-center g-3">
+                <div class="col-md-3">
+                    <h4 class="fw-bold text-info">{{ app()->version() }}</h4>
+                    <small class="text-light opacity-75">Laravel Version</small>
+                </div>
+                <div class="col-md-3">
+                    <h4 class="fw-bold text-info">{{ PHP_VERSION }}</h4>
+                    <small class="text-light opacity-75">PHP Runtime</small>
+                </div>
+                <div class="col-md-3">
+                    <h4 class="fw-bold text-info">{{ config('app.env') }}</h4>
+                    <small class="text-light opacity-75">Environment Mode</small>
+                </div>
+                <div class="col-md-3">
+                    <h4 class="fw-bold text-warning">Active</h4>
+                    <small class="text-light opacity-75">Deployment Ready</small>
+                </div>
+            </div>
         </div>
 
-        <div class="row mt-4 g-4">
-
-            <div class="col-md-3">
-                <div class="card shadow text-center">
-                    <div class="card-body">
-                        <i class="fa-solid fa-layer-group text-primary fa-2x"></i>
-                        <h2 class="mt-3">{{ \App\Models\Deployment::count() }}</h2>
-                        <h6>Total Deployments</h6>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card shadow text-center">
-                    <div class="card-body">
-                        <i class="fa-solid fa-circle-check text-success fa-2x"></i>
-                        <h2 class="mt-3">
-                            {{ \App\Models\Deployment::where('status','Success')->count() }}
-                        </h2>
-                        <h6>Successful</h6>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card shadow text-center">
-                    <div class="card-body">
-                        <i class="fa-solid fa-circle-xmark text-danger fa-2x"></i>
-                        <h2 class="mt-3">
-                            {{ \App\Models\Deployment::where('status','Failed')->count() }}
-                        </h2>
-                        <h6>Failed</h6>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card shadow text-center">
-                    <div class="card-body">
-                        <i class="fa-solid fa-calendar-day text-warning fa-2x"></i>
-                        <h2 class="mt-3">
-                            {{ \App\Models\Deployment::whereDate('deployment_date',today())->count() }}
-                        </h2>
-                        <h6>Today's Deployments</h6>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="row g-4">
-
+        <!-- 4 Key Core Features Grid -->
+        <h4 class="text-light fw-bold mb-3"><i class="fa-solid fa-cubes-stacked text-primary me-2"></i> DevOps & Deployment Engine Modules</h4>
+        <div class="row g-4 mb-5">
+            <!-- Feature 1: One-Click Deployment Simulator -->
             <div class="col-lg-6">
-
-                <div class="card shadow h-100">
-
-                    <div class="card-body text-center p-5">
-
-                        <div class="icon blue mb-4">
-                            <i class="fa-solid fa-microchip"></i>
-                        </div>
-
-                        <h3>Server Information</h3>
-
-                        <p class="text-muted mt-3">
-                            View Laravel version, PHP configuration,
-                            cache driver, session driver,
-                            queue driver, timezone and server details.
-                        </p>
-
-                        <a href="{{ route('server.info') }}"
-                            class="btn btn-primary mt-3 px-4">
-
-                            View Server Info
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="col-lg-6">
-
-                <div class="card shadow h-100">
-
-                    <div class="card-body text-center p-5">
-
-                        <div class="icon green mb-4">
-                            <i class="fa-solid fa-heart-pulse"></i>
-                        </div>
-
-                        <h3>Deployment Health Check</h3>
-
-                        <p class="text-muted mt-3">
-
-                            Verify database connection,
-                            storage permissions,
-                            application key,
-                            cache configuration,
-                            queue configuration and more.
-
-                        </p>
-
-                        <a href="{{ route('health.check') }}"
-                            class="btn btn-success mt-3 px-4">
-
-                            Run Health Check
-
-                        </a>
-
-                    </div>
-
-                    <div class="row mt-4">
-
-                        <div class="col-lg-12">
-
-                            <div class="card shadow">
-
-                                <div class="card-body text-center">
-
-                                    <div class="icon blue mb-3">
-
-                                        <i class="fa-solid fa-cloud-arrow-up"></i>
-
-                                    </div>
-
-                                    <h3>Deployment Management</h3>
-
-                                    <p class="text-muted">
-
-                                        Manage deployments, search records, export CSV, update deployment status and delete records.
-
-                                    </p>
-
-                                    <a href="{{ route('deployments.index') }}"
-                                        class="btn btn-dark btn-lg">
-
-                                        <i class="fa-solid fa-list"></i>
-
-                                        Open Deployment Manager
-
-                                    </a>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="row mt-5">
-
-            <div class="col-lg-12">
-
-                <div class="card shadow info-card">
-
-                    <div class="card-body">
-
-                        <h3 class="mb-4">
-
-                            <i class="fa-solid fa-circle-info text-primary"></i>
-
-                            Project Information
-
-                        </h3>
-
-                        <div class="row">
-
-                            <div class="col-md-6">
-
-                                <table class="table">
-
-                                    <tr>
-                                        <th>Project</th>
-                                        <td>Laravel Deployment Demo</td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Framework</th>
-                                        <td>Laravel 12</td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>PHP</th>
-                                        <td>{{ PHP_VERSION }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Environment</th>
-                                        <td>{{ config('app.env') }}</td>
-                                    </tr>
-
-                                </table>
-
-                            </div>
-
-                            <div class="col-md-6">
-
-                                <table class="table">
-
-                                    <tr>
-                                        <th>Database</th>
-                                        <td>{{ config('database.default') }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Cache Driver</th>
-                                        <td>{{ config('cache.default') }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Queue Driver</th>
-                                        <td>{{ config('queue.default') }}</td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Server Time</th>
-                                        <td>{{ now()->format('d M Y h:i A') }}</td>
-                                    </tr>
-
-                                </table>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="row mt-5">
-
-            <div class="col-lg-12">
-
                 <div class="card shadow">
-
-                    <div class="card-header bg-dark text-white">
-
-                        <h4>
-
-                            <i class="fa-solid fa-clock-rotate-left"></i>
-
-                            Latest Deployments
-
-                        </h4>
-
+                    <div class="card-body feature-box">
+                        <div class="icon-circle bg-warning text-dark">
+                            <i class="fa-solid fa-rocket"></i>
+                        </div>
+                        <h4 class="fw-bold text-light">One-Click Deployment Simulator</h4>
+                        <p class="text-secondary mt-2">
+                            Interactive 6-stage animated continuous delivery pipeline (Git Pull → Composer → Vite Build → DB Migrate → Cache Warm → Go Live) with live stdout log streaming.
+                        </p>
+                        <a href="{{ route('deployment.simulator') }}" class="btn btn-warning fw-bold px-4 mt-2">
+                            <i class="fa-solid fa-play me-1"></i> Launch Deployment Simulator
+                        </a>
                     </div>
-
-                    <div class="card-body">
-
-                        <table class="table table-hover">
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>ID</th>
-
-                                    <th>Project</th>
-
-                                    <th>Server</th>
-
-                                    <th>Status</th>
-
-                                    <th>Date</th>
-
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                @foreach(\App\Models\Deployment::latest()->take(5)->get() as $deployment)
-
-                                <tr>
-
-                                    <td>{{ $deployment->id }}</td>
-
-                                    <td>{{ $deployment->project_name }}</td>
-
-                                    <td>{{ $deployment->server_name }}</td>
-
-                                    <td>
-
-                                        @if($deployment->status=="Success")
-
-                                        <span class="badge bg-success">
-
-                                            Success
-
-                                        </span>
-
-                                        @else
-
-                                        <span class="badge bg-danger">
-
-                                            Failed
-
-                                        </span>
-
-                                        @endif
-
-                                    </td>
-
-                                    <td>
-
-                                        {{ $deployment->deployment_date }}
-
-                                    </td>
-
-                                </tr>
-
-                                @endforeach
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
                 </div>
-
             </div>
 
+            <!-- Feature 2: Analytics & Trends Dashboard -->
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body feature-box">
+                        <div class="icon-circle bg-info text-dark">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <h4 class="fw-bold text-light">Deployment Analytics & Trends</h4>
+                        <p class="text-secondary mt-2">
+                            Visual Chart.js dashboard tracking 30-day deployment volume, failure pattern heatmaps, environment distribution shares, and top deployer leaderboards.
+                        </p>
+                        <a href="{{ route('deployment.analytics') }}" class="btn btn-info text-dark fw-bold px-4 mt-2">
+                            <i class="fa-solid fa-chart-pie me-1"></i> View Analytics Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 3: GitHub Actions CI/CD Workflow Builder -->
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body feature-box">
+                        <div class="icon-circle bg-primary">
+                            <i class="fa-brands fa-github"></i>
+                        </div>
+                        <h4 class="fw-bold text-light">GitHub Actions CI/CD Builder</h4>
+                        <p class="text-secondary mt-2">
+                            Visual drag-and-drop workflow architect to generate production-ready <code>ci.yml</code> files with PHP version gating, automated testing, and remote SSH deployment.
+                        </p>
+                        <a href="{{ route('cicd.builder') }}" class="btn btn-primary fw-bold px-4 mt-2">
+                            <i class="fa-solid fa-code me-1"></i> Open CI/CD Builder
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 7: Server SSH Terminal Simulator -->
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body feature-box">
+                        <div class="icon-circle bg-success">
+                            <i class="fa-solid fa-terminal"></i>
+                        </div>
+                        <h4 class="fw-bold text-light">Server SSH Terminal Simulator</h4>
+                        <p class="text-secondary mt-2">
+                            Realistic browser-based Ubuntu terminal emulator to execute commands (ssh, git, composer, artisan, systemctl, chmod) with a comprehensive Command Reference Lab.
+                        </p>
+                        <a href="{{ route('server.terminal') }}" class="btn btn-success fw-bold px-4 mt-2">
+                            <i class="fa-solid fa-terminal me-1"></i> Open Terminal Lab
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <footer class="text-center mt-5">
+        <!-- System & Historical Diagnostics Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card shadow text-center p-4">
+                    <i class="fa-solid fa-cloud-arrow-up text-primary fa-2x mb-3"></i>
+                    <h5 class="fw-bold">Deployment Manager</h5>
+                    <p class="text-secondary small">Browse, search, edit, and export complete deployment audit logs in CSV format.</p>
+                    <a href="{{ route('deployments.index') }}" class="btn btn-sm btn-outline-primary mt-auto">Open Manager</a>
+                </div>
+            </div>
 
-            <hr>
+            <div class="col-md-4">
+                <div class="card shadow text-center p-4">
+                    <i class="fa-solid fa-microchip text-info fa-2x mb-3"></i>
+                    <h5 class="fw-bold">Server Architecture</h5>
+                    <p class="text-secondary small">Inspect PHP extensions, memory limits, opcache settings, and operating system specs.</p>
+                    <a href="{{ route('server.info') }}" class="btn btn-sm btn-outline-info mt-auto">Inspect Architecture</a>
+                </div>
+            </div>
 
-            <p>
-                Laravel 12 Deployment to Server & Continuous Integration Demo
-            </p>
-
-        </footer>
+            <div class="col-md-4">
+                <div class="card shadow text-center p-4">
+                    <i class="fa-solid fa-heart-pulse text-success fa-2x mb-3"></i>
+                    <h5 class="fw-bold">Pre-Flight Health Check</h5>
+                    <p class="text-secondary small">Verify database connectivity, storage writable permissions, and application encryption keys.</p>
+                    <a href="{{ route('health.check') }}" class="btn btn-sm btn-outline-success mt-auto">Run Health Check</a>
+                </div>
+            </div>
+        </div>
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
